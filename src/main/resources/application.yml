@@ -7,7 +7,7 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       show_sql: true
       format_sql: true
@@ -29,8 +29,6 @@ springdoc:
     groups:
       enabled: true
   swagger-ui:
-    operations-sorter: alpha
-    tags-sorter: alpha
     path: /3o3/swagger.html
     disable-swagger-default-url: false
     display-query-params-without-oauth2: true

@@ -34,8 +34,8 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 정책을 STATELESS로 설정
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PERMIT_URL_ARRAY).permitAll() // 특정 URL에 대해 인증 없이 접근 허용
-                        //.requestMatchers("/szs/**").authenticated() // "/szs/**" 경로는 인증 필요
+                        .requestMatchers(PERMIT_URL_ARRAY).permitAll()
+                        .requestMatchers("/szs/scrap").authenticated()
                 )
                 .addFilterBefore(new JwtFilter(jwtTokenUtil), UsernamePasswordAuthenticationFilter.class); // JWT 필터 추가
 

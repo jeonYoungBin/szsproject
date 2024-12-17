@@ -22,6 +22,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,6 +62,27 @@ public class SzsController {
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MemberLoginResponse> login(@RequestBody @Valid MemberLoginRequest request) throws Exception {
         return ResponseEntity.ok(MemberLoginResponse.builder().accessToken(szsService.login(request.getUserId(), request.getPassword())).build());
+    }
+
+    @Tag(name = "소득정보")
+    @Operation(summary = "소득정보", description = "소득정보 api 입니다")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "호출 성공", content = @Content(schema = @Schema(implementation = IncomeResponse.class))),
+            @ApiResponse(responseCode = "206", description = "기타 api 오류", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = Error.class)))
+    })
+    @PostMapping(value = "/scrap", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<IncomeResponse> income(Authentication authentication) throws Exception {
+        return ResponseEntity.ok(IncomeResponse.builder().memberId(szsService.calculateDeduction(authentication.getName())).build());
+    }
+
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    static class IncomeResponse {
+        private Long memberId;
     }
 
     @Getter

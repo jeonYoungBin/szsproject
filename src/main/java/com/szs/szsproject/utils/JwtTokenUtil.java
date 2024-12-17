@@ -19,7 +19,7 @@ public class JwtTokenUtil {
     @Value("${jwt.secretKey}")
     private String secretKey;
 
-    // 토큰 유효시간 30분
+    // 토큰 유효시간 2시간
     private static long tokenValidTime = 2;
 
     @PostConstruct
@@ -58,8 +58,11 @@ public class JwtTokenUtil {
 
     public String getMemberInfo(String jwt) throws RuntimeException {
         try {
-            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwt)
-                    .getBody().get("userId", String.class);
+            return Jwts.parser()
+                    .setSigningKey(getSigningKey())
+                    .parseClaimsJws(jwt)
+                    .getBody()
+                    .getSubject();
 
         } catch (RuntimeException e) {
             throw new RuntimeException(e.getMessage());

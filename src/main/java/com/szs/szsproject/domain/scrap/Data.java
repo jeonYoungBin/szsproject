@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public class Data {
     @JsonProperty("종합소득금액")
-    private long totalIncome;
+    private Long totalIncome;
 
     @JsonProperty("이름")
     private String name;

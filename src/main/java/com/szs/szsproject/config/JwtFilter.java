@@ -38,8 +38,9 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         boolean validateToken = true;
         ResponseDto responseEntity = new ResponseDto(501, null, null);
-        if(request.getRequestURI().contains("/swagger") || request.getRequestURI().contains("/api-docs") || request.getRequestURI().contains("/3o3/swagger")
-                || request.getRequestURI().contains("/szs/login") || request.getRequestURI().contains("/szs/signup")) {
+        if(request.getRequestURI().contains("/swagger") || request.getRequestURI().contains("/api-docs")
+                || request.getRequestURI().contains("/3o3/swagger") || request.getRequestURI().contains("/szs/login")
+                || request.getRequestURI().contains("/szs/signup")) {
             filterChain.doFilter(request, response);
             return;
         }
