@@ -35,7 +35,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PERMIT_URL_ARRAY).permitAll()
-                        .requestMatchers("/szs/scrap").authenticated()
+                        .requestMatchers("/szs/scrap", "/szs/refund").authenticated()
                 )
                 .addFilterBefore(new JwtFilter(jwtTokenUtil), UsernamePasswordAuthenticationFilter.class); // JWT 필터 추가
 

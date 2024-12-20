@@ -38,16 +38,19 @@ public class Member {
 
     @Column(name = "total_income")
     private String totalIncome;   //종합소득금액
+    @Column(name = "total_tax_deductions")
+    private String TotalTaxDeduction; //세액공제
+    /**
+     * 소득 공제
+     */
     @Column(name = "total_pension_deductions")
     private String totalPensionDeductions; //국민연금(총합)
     @Column(name = "total_creditCard_deduction")
     private String totalCreditCardDeduction; //신용카드소득세(총합)
-    @Column(name = "total_tax_deductions")
-    private String TotalTaxDeduction; //세액공제
 
-    @LastModifiedDate
+    /*@LastModifiedDate
     @Column(name = "update_at")
-    private LocalDateTime updateAt;
+    private LocalDateTime updateAt;*/
 
     public void updateTotalIncome(String totalIncome) {
         this.totalIncome = totalIncome;

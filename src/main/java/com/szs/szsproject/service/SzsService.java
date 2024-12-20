@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.MutableAttributeSet;
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +85,39 @@ public class SzsService {
 
         return member.getId();
     }
+
+    public String calculateRefund(String userId) throws CustomException {
+        Member member = memberJpaDataRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(ServiceExceptionCode.DATA_NOT_FOUND_USER));
+
+        // 과세 표준 = 종합소득금액 - 소득공제
+        long taxBase = Math.round(Double.valueOf(member.getTotalIncome()) -
+                (Double.valueOf(member.getTotalCreditCardDeduction()) + Double.valueOf(member.getTotalPensionDeductions())));
+
+        // 산출세액
+        double taxAmount = 0.0;
+        if (taxBase <= 14_000_000L) {
+            taxAmount = taxBase * 0.06;
+        } else if (taxBase > 14_000_000L && taxBase <= 50_000_000L) {
+            taxAmount = 840_000L + (taxBase - 14_000_000L) * 0.15;
+        } else if (taxBase > 50_000_000L && taxBase <= 88_000_000L) {
+            taxAmount = 6_240_000 + (taxBase - 50_000_000L) * 0.24;
+        } else if (taxBase > 88_000_000L && taxBase <= 150_000_000L) {
+            taxAmount = 15_360_000 + (taxBase - 88_000_000L) * 0.35;
+        } else if (taxBase > 150_000_000L && taxBase <= 300_000_000L) {
+            taxAmount = 37_060_000 + (taxBase - 150_000_000L) * 0.38;
+        } else if (taxBase > 300_000_000L && taxBase <= 500_000_000L) {
+            taxAmount = 113_060_000 + (taxBase - 300_000_000L) * 0.4;
+        } else if (taxBase > 500_000_000L && taxBase <= 1_000_000_000L) {
+            taxAmount = 193_060_000 + (taxBase - 500_000_000L) * 0.42;
+        } else {
+            taxAmount = 403_060_000 + (taxBase - 1_000_000_000L) * 0.45;
+        }
+
+        NumberFormat format = NumberFormat.getInstance();
+        return format.format(Math.round(taxAmount - Double.valueOf(member.getTotalTaxDeduction())));
+    }
+
 
     /**
      * 가입 가능한 이름&주민번호 체크

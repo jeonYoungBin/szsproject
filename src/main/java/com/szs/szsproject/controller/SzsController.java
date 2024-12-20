@@ -76,6 +76,26 @@ public class SzsController {
         return ResponseEntity.ok(IncomeResponse.builder().memberId(szsService.calculateDeduction(authentication.getName())).build());
     }
 
+    @Tag(name = "결정세액")
+    @Operation(summary = "소득정보", description = "소득정보 api 입니다")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "호출 성공", content = @Content(schema = @Schema(implementation = RefundResponse.class))),
+            @ApiResponse(responseCode = "206", description = "기타 api 오류", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = Error.class)))
+    })
+    @PostMapping(value = "/refund", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RefundResponse> refund(Authentication authentication) throws Exception {
+        return ResponseEntity.ok(RefundResponse.builder().refund(szsService.calculateRefund(authentication.getName())).build());
+    }
+
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    static class RefundResponse {
+        private String refund;
+    }
 
     @Getter
     @Builder
