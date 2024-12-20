@@ -48,9 +48,9 @@ public class Member {
     @Column(name = "total_creditCard_deduction")
     private String totalCreditCardDeduction; //신용카드소득세(총합)
 
-    /*@LastModifiedDate
+    @LastModifiedDate
     @Column(name = "update_at")
-    private LocalDateTime updateAt;*/
+    private LocalDateTime updateAt;
 
     public void updateTotalIncome(String totalIncome) {
         this.totalIncome = totalIncome;
