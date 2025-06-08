@@ -1,6 +1,6 @@
 package com.szs.szsproject.exception.handler;
 
-import com.szs.szsproject.domain.ResponseDto;
+import com.szs.szsproject.exception.response.ResponseDto;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;

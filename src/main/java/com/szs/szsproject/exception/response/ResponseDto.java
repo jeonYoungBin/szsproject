@@ -1,4 +1,4 @@
-package com.szs.szsproject.domain;
+package com.szs.szsproject.exception.response;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -7,12 +7,15 @@ import com.szs.szsproject.exception.ServiceExceptionCode;
 import com.szs.szsproject.repository.MemberJpaDataRepository;
 import com.szs.szsproject.utils.AesUtil;
 import com.szs.szsproject.utils.JwtTokenUtil;
+import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
+import reactor.util.function.Tuples;
 
 import javax.swing.text.MutableAttributeSet;
 import java.text.NumberFormat;
@@ -58,7 +61,44 @@ public class SzsService {
         return jwtTokenProvider.createToken(member.getUserId(), aesUtil.decrypt(member.getRegNo()));
     }
 
+    public Mono<Long> calculateDeductionAsync(String userId) {
+        return Mono.fromCallable(() -> {
+                    Member member = memberJpaDataRepository.findByUserId(userId)
+                            .orElseThrow(() -> new CustomException(ServiceExceptionCode.DATA_NOT_FOUND_USER));
+                    String name = member.getName();
+                    String regNo = aesUtil.decrypt(member.getRegNo());
+                    return Tuples.of(member, name, regNo);
+                })
+                .flatMap(tuple -> webClientService.callApiReactive(tuple.getT2(), tuple.getT3())
+                        .flatMap(srpResponse -> saveDeductions(tuple.getT1(), srpResponse))
+                );
+    }
+
     @Transactional
+    public Mono<Long> saveDeductions(Member member, SrpResponse srpResponse) {
+        // totalIncome
+        member.updateTotalIncome(String.valueOf(srpResponse.getData().getTotalIncome()));
+
+        // pension
+        double pensionSum = srpResponse.getData().getTaxDeductions().getPensionDeductions().stream()
+                .mapToDouble(d -> Double.parseDouble(d.getDeductionAmount().replace(",", "")))
+                .sum();
+        member.updateTotalPensionDeductions(String.valueOf(pensionSum));
+
+        // credit card
+        double creditSum = srpResponse.getData().getTaxDeductions().getCreditCardDeduction().getMonthlyDeductions().stream()
+                .flatMap(map -> map.values().stream())
+                .mapToDouble(val -> Double.parseDouble(val.replace(",", "")))
+                .sum();
+        member.updateTotalCreditCardDeduction(String.valueOf(creditSum));
+
+        // tax deduction
+        member.updateTotalTaxDeduction(srpResponse.getData().getTaxDeductions().getTaxDeduction().replace(",", ""));
+
+        return Mono.just(memberJpaDataRepository.save(member).getId());
+    }
+
+    /*@Transactional
     public Long calculateDeduction(String userId) throws Exception {
         Member member = memberJpaDataRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ServiceExceptionCode.DATA_NOT_FOUND_USER));
         SrpResponse srpResponse = webClientService.callApi(member.getName(), aesUtil.decrypt(member.getRegNo()));
@@ -84,7 +124,7 @@ public class SzsService {
         member.updateTotalTaxDeduction(srpResponse.getData().getTaxDeductions().getTaxDeduction().replace(",",""));
 
         return member.getId();
-    }
+    }*/
 
     public String calculateRefund(String userId) throws CustomException {
         Member member = memberJpaDataRepository.findByUserId(userId)

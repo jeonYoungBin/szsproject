@@ -18,7 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtTokenUtil jwtTokenUtil;
-    private static final String[] PERMIT_URL_ARRAY = {"/v3/api-docs/**", "/3o3/swagger*/**","/szs/login","/szs/signup","/api-docs/**"};
+    private static final String[] PERMIT_URL_ARRAY = {"/v3/api-docs/**", "/3o3/swagger*/**","/swagger-ui/**","/szs/login","/szs/signup","/api-docs/**"};
 
     @Bean
     public BCryptPasswordEncoder encodePassword() {

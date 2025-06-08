@@ -2,7 +2,7 @@ package com.szs.szsproject.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.szs.szsproject.domain.ResponseDto;
+import com.szs.szsproject.exception.response.ResponseDto;
 import com.szs.szsproject.utils.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;

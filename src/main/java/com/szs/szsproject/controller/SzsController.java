@@ -1,6 +1,6 @@
 package com.szs.szsproject.controller;
 
-import com.szs.szsproject.domain.ResponseDto;
+import com.szs.szsproject.exception.response.ResponseDto;
 import com.szs.szsproject.entity.Member;
 import com.szs.szsproject.service.SzsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,9 +17,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -27,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/szs")
@@ -72,8 +70,13 @@ public class SzsController {
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @PostMapping(value = "/scrap", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<IncomeResponse> income(Authentication authentication) throws Exception {
-        return ResponseEntity.ok(IncomeResponse.builder().memberId(szsService.calculateDeduction(authentication.getName())).build());
+    public Mono<ResponseEntity<IncomeResponse>> income(Authentication authentication) throws Exception {
+        return szsService.calculateDeductionAsync(authentication.getName())
+                .map(memberId -> ResponseEntity.ok(
+                        IncomeResponse.builder()
+                                .memberId(memberId)
+                                .build()
+                ));
     }
 
     @Tag(name = "결정세액")

@@ -1,13 +1,13 @@
 server.port: 8080
 spring:
   datasource:
-    url: jdbc:h2:tcp://localhost/~/testDB
+    url: jdbc:h2:tcp://localhost/~/test
     username: sa
     password:
     driver-class-name: org.h2.Driver
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       show_sql: true
       format_sql: true
@@ -21,6 +21,7 @@ jwt:
 
 endpoint:
   key: G9fSpitmtAeKzYJC7X0SwA==
+  uri: https://codetest-v4.3o3.co.kr
 
 springdoc:
   default-consumes-media-type: application/json
