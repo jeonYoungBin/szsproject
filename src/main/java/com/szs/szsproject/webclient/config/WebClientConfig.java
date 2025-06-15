@@ -1,6 +1,6 @@
-package com.szs.szsproject.config;
+package com.szs.szsproject.webclient.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -8,15 +8,15 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
+@RequiredArgsConstructor
 public class WebClientConfig {
-    @Value("${endpoint.uri}")
-    private String uri;
+    private final WebClientProperties properties;
 
     @Bean
     public WebClient webClient() {
         return WebClient.builder()
-                .baseUrl(uri)
+                .baseUrl(properties.getUri())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
-}
+} 
