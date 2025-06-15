@@ -98,34 +98,6 @@ public class SzsService {
         return Mono.just(memberJpaDataRepository.save(member).getId());
     }
 
-    /*@Transactional
-    public Long calculateDeduction(String userId) throws Exception {
-        Member member = memberJpaDataRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ServiceExceptionCode.DATA_NOT_FOUND_USER));
-        SrpResponse srpResponse = webClientService.callApi(member.getName(), aesUtil.decrypt(member.getRegNo()));
-
-        //종합소득금액
-        member.updateTotalIncome(String.valueOf(srpResponse.getData().getTotalIncome()));
-
-        //국민연금 총 합
-        double pensionDeductionsSum = srpResponse.getData().getTaxDeductions().getPensionDeductions().stream()
-                .mapToDouble(deduction -> Double.parseDouble(deduction.getDeductionAmount().replace(",", "")))
-                .sum();
-        member.updateTotalPensionDeductions(String.valueOf(pensionDeductionsSum));
-
-        //신용카드소득공제 총 합
-        List<Map<String, String>> monthlyDeductions = srpResponse.getData().getTaxDeductions().getCreditCardDeduction().getMonthlyDeductions();
-        double creditCardDeductionSum = monthlyDeductions.stream()
-                .flatMap(map -> map.values().stream())
-                .mapToDouble(value -> Double.parseDouble(value.replace(",", ""))) // 쉼표 제거 후 double로 변환
-                .sum();
-        member.updateTotalCreditCardDeduction(String.valueOf(creditCardDeductionSum));
-
-        //세액공제
-        member.updateTotalTaxDeduction(srpResponse.getData().getTaxDeductions().getTaxDeduction().replace(",",""));
-
-        return member.getId();
-    }*/
-
     public String calculateRefund(String userId) throws CustomException {
         Member member = memberJpaDataRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(ServiceExceptionCode.DATA_NOT_FOUND_USER));
